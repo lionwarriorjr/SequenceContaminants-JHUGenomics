@@ -1,0 +1,22 @@
+Common microbial contamination found in sequencing experiments:
+
+Escherichia coli (bacteria)
+Stenotrophomonas maltophilia (bacteria)
+Achromobacter xylosoxidans (bacteria)
+Delftia acidovorans (bacteria)
+Propionibacterium acnes (bacteria)
+Staphylococcus epidermidis (bacteria)
+Acinetobacter baumannii (bacteria)
+Saccharomyces cerevisiae (yeast)
+Wickerhamomyces anomalus (yeast)
+Malassezia restricta (yeast)
+Penicillium notatum (fungus)
+---------------------------------------
+Enterobacteria phage (virus)
+Propionibacterium phage (virus)
+Staphylococcus phage (virus)
+
+
+References:
+1. Zinter, M. S., Mayday, M. Y., Ryckman, K. K., Jelliffe-Pawlowski, L. L., & DeRisi, J. L. (2019). Towards precision quantification of contamination in metagenomic sequencing experiments. Microbiome, 7(1), 62.
+2. Sangiovanni, M., Granata, I., Thind, A. S., & Guarracino, M. R. (2019). From trash to treasure: detecting unexpected contamination in unmapped NGS data. BMC bioinformatics, 20(4), 168.
