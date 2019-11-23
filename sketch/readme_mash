@@ -1,0 +1,8 @@
+Mash: fast genome and metagenome distance estimation using minhash
+https://mash.readthedocs.io/en/latest/index.html
+
+## First, sketch each species
+mash sketch XX.fna
+
+## Second, sketch all species together as one allref.msh
+mash sketch -o allref *.fna
