@@ -1,6 +1,7 @@
-import sys
 import pybloom_live
 import pickle
+import argparse
+from tqdm import tqdm
 
 
 def kmers(seq, k):
@@ -26,34 +27,40 @@ def load_data(filename):
 
 
 def main():
-    seq_file = sys.argv[1]
-    with open(seq_file, 'r') as f:
-        seq = ''
-        l = 0
-        for line in f:
-            if l > 1000:
-                break
-            if line.startswith('>'):
-                continue
-            seq = seq + line.rstrip()
-            l += 1
-    kms = kmers(seq, 20)
-    print(kms[1])
-    sbf = pybloom_live.ScalableBloomFilter(mode=pybloom_live.ScalableBloomFilter.LARGE_SET_GROWTH)
-    count = 1
-    for i in kms:
-        _ = sbf.add(i)
-        count += 1
+    parse = argparse.ArgumentParser(description='Build Naive Bloom Filter')
+    parse.add_argument('-i', nargs='+', help='Input reference fasta')
+    parse.add_argument('-o', nargs='+', help='Output bloom filter path')
+    args = parse.parse_args()
+    if len(args.i) != len(args.o):
+        parse.error('Numbers of Input and Output do not match')
+    for ip, op in zip(args.i, args.o):
+        seq_file = ip
+        with open(seq_file, 'r') as f:
+            seq = ''
+            # l = 0
+            for line in f:
+                # if l > 1000:
+                #     break
+                if line.startswith('>'):
+                    continue
+                seq = seq + line.rstrip()
+                # l += 1
+        kms = kmers(seq, 20)
+        print(ip)
+        print('number of kmers', len(kms))
+        sbf = pybloom_live.ScalableBloomFilter(mode=pybloom_live.ScalableBloomFilter.LARGE_SET_GROWTH)
 
+        for i, x in zip(kms, tqdm(range(len(kms)))):
+            _ = sbf.add(i)
 
-    if kms[1] in sbf:
-        print('kms in sbf')
-    with open('test_bloom.txt', 'wb') as fh:
-        sbf.tofile(fh)
-    with open('test_bloom.txt', 'rb') as b:
-        sbf_file = pybloom_live.ScalableBloomFilter.fromfile(b)
-    if kms[1] in sbf_file:
-        print('kms in file')
+        if next(iter(kms)) in sbf:
+            print('kms in sbf')
+        with open(op, 'wb') as fh:
+            sbf.tofile(fh)
+        with open(op, 'rb') as b:
+            sbf_file = pybloom_live.ScalableBloomFilter.fromfile(b)
+        if next(iter(kms)) in sbf_file:
+            print('kms in file')
 
 
 if __name__ == '__main__':
