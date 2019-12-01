@@ -48,14 +48,14 @@ def main():
         seq_file = os.path.join(args.i, ip)
         with open(seq_file, 'r') as f:
             seq = ''
-            # l = 0
+            l = 0
             for line in f:
-                # if l > 1000:
-                #     break
+                if l > 1000:
+                    break
                 if line.startswith('>'):
                     continue
                 seq = seq + line.rstrip()
-                # l += 1
+                l += 1
         kms = kmers(seq, 20)
         print(op)
         print('number of kmers', len(kms))
