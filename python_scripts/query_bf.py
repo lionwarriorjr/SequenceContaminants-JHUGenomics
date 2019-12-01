@@ -60,7 +60,7 @@ def main():
     output = np.zeros((len(fq), len(bf_path)), dtype=int)
     for j, bf in enumerate(bf_path):
         with open(bf, 'rb') as b:
-            sbf_file = pybloom_live.ScalableBloomFilter.fromfile(b)
+            sbf_file = pybloom_live.BloomFilter.fromfile(b)
             for i, read_k in enumerate(reads_kms):
                 read_kmer_len = len(read_k)
                 mis = 0
