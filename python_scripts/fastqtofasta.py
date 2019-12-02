@@ -21,5 +21,5 @@ def fastqtofasta(filename):
 fastqfile = sys.argv[1]
 fna_name,fna_seq = fastqtofasta(fastqfile)
 for k in range(0,len(fna_name)):
-    print('@' + fna_name[k])
+    print('>' + fna_name[k])
     print(fna_seq[k])
