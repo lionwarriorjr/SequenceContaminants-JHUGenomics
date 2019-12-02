@@ -60,7 +60,7 @@ def main():
     output = np.zeros((len(fq), len(bf_path)), dtype=int)
     for j, bf in enumerate(bf_path):
         with open(bf, 'rb') as b:
-            sbf_file = pybloom_live.BloomFilter.fromfile(b)
+            sbf_file = pybloom_live.ScalableBloomFilter.fromfile(b)
             for i, read_k in enumerate(reads_kms):
                 read_kmer_len = len(read_k)
                 mis = 0
@@ -71,7 +71,7 @@ def main():
                     #     break
                     if k in sbf_file:
                         match += 1
-                        if match/read_kmer_len >= 0.2:
+                        if match/read_kmer_len >= 0.8:
                             output[i][j] = 1
                             break
                         # if mis/read_kmer_len > 0.5:
@@ -79,10 +79,7 @@ def main():
                 # if mis/read_kmer_len < 0.8:
                 #     output[i][j] = 1
 
-    score = np.zeros(len(bf_files), dtype=int)
-    x, y = np.nonzero(output)
-    for r in y:
-        score[r] += 1
+    score = np.sum(output, axis=0)
 
     # for out in output:
     #     sys.stdout.write(' '.join([str(x) for x in out]) + '\n')

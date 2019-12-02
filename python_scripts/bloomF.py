@@ -59,7 +59,8 @@ def main():
         kms = kmers(seq, 20)
         print(op)
         print('number of kmers', len(kms))
-        sbf = pybloom_live.BloomFilter(capacity=2000000000, error_rate=0.008)
+        sbf = pybloom_live.ScalableBloomFilter(mode=pybloom_live.ScalableBloomFilter.LARGE_SET_GROWTH,
+                                               error_rate=0.0005)
 
         for i, x in zip(kms, tqdm(range(len(kms)))):
             _ = sbf.add(i)
@@ -70,7 +71,7 @@ def main():
         with open(out_file, 'wb') as fh:
             sbf.tofile(fh)
         with open(out_file, 'rb') as b:
-            sbf_file = pybloom_live.BloomFilter.fromfile(b)
+            sbf_file = pybloom_live.ScalableBloomFilter.fromfile(b)
         if next(iter(kms)) in sbf_file:
             print('kms in file')
 
