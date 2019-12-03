@@ -1,4 +1,4 @@
-#Simulate fastq with reference fasta
+# Simulate fastq with reference fasta
 
 1. We want to first remove lines that consists all N bases
 from human chr21 fasta. Run the following python script.
