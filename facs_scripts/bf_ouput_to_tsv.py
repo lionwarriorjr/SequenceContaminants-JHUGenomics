@@ -26,7 +26,6 @@ for file in os.listdir(con_path):
     species_name = file[:-12]
     con_file_path = os.path.join(con_path, file)
     if os.path.getsize(con_file_path) and file.endswith('fastq'):
-        print(file)
         with open(con_file_path, 'r') as f:
             reads, names = parse_fastq(f)
             for r, n in zip(reads, names):
@@ -48,4 +47,3 @@ with open(os.path.join(con_path, 'facs_output.tsv'), 'wt') as t:
                 else:
                     sn = i
             tsv_writer.writerow([na, re[0], sn])
-            print([na, re[0], sn])
