@@ -7,11 +7,11 @@ from tqdm import tqdm
 
 # Code from genome-sketching
 def kmers(seq, k):
-    kms = set()
+    kms = []
     num_k = len(seq) - k + 1
     for i in range(num_k):
         km = seq[i:i + k]
-        kms.add(km)
+        kms.append(km)
     return kms
 
 # Code from lecture
