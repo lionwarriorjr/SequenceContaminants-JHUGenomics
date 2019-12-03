@@ -1,6 +1,7 @@
 import os
 import csv
 
+
 def parse_fastq(fh):
     """ Parse reads from a FASTQ filehandle.  For each read, we
         return a name, nucleotide-string, quality-string triple. """
@@ -20,12 +21,24 @@ def parse_fastq(fh):
         q_score.append(qual)
     return reads, names
 
+
 con_path = './contaminated_fastq'
 output = {}
+SPECIES = {'e_coli.bloom.fastq': 0,
+           's_maltophilia.bloom.fastq': 1,
+           'a_xylosoxidans.bloom.fastq': 2,
+           'd_acidovorans.bloom.fastq': 3,
+           'p_acne.bloom.fastq': 4,
+           's_epidermidis.bloom.fastq': 5,
+           'a_baumannii.bloom.fastq': 6,
+           's_cerevisiae.bloom.fastq': 7,
+           'w_anomalus.bloom.fastq': 8,
+           'm_restricta.bloom.fastq': 9,
+           'p_notatum.bloom.fastq': 10}
 for file in os.listdir(con_path):
-    species_name = file[:-12]
     con_file_path = os.path.join(con_path, file)
     if os.path.getsize(con_file_path) and file.endswith('fastq'):
+        species_name = SPECIES[file]
         with open(con_file_path, 'r') as f:
             reads, names = parse_fastq(f)
             for r, n in zip(reads, names):
@@ -43,7 +56,7 @@ with open(os.path.join(con_path, 'facs_output.tsv'), 'wt') as t:
             sn = ''
             for i in re[1]:
                 if sn:
-                    sn = sn + ',' + i
+                    sn = str(sn) + ',' + str(i)
                 else:
-                    sn = i
+                    sn = str(i)
             tsv_writer.writerow([na, re[0], sn])
