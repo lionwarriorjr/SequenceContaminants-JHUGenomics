@@ -42,6 +42,6 @@ bowtie2-build path/to/human_ref_chr21.fasta ref_chr21
 5. Align the contaminated fastq from step 3 to human reference 
 using bowtie2 and extract the unmapped reads.
 ```shell script
-bowtie2 -x path/to/human_chr21 -U path/to/chr21_mix3species.fastq --un path/to/unmapped_mix3species.fastq -S path/to/out_mix3species.sam
-bowtie2 -x path/to/human_chr21 -U path/to/chr21_mix3species_diffprop.fastq --un path/to/unmapped_mix3species_diffprop.fastq -S path/to/out_mix3species_diffprop.sam
+bowtie2 -x path/to/ref_chr21 -U path/to/chr21_mix3species.fastq --un path/to/unmapped_mix3species.fastq -S path/to/out_mix3species.sam
+bowtie2 -x path/to/ref_chr21 -U path/to/chr21_mix3species_diffprop.fastq --un path/to/unmapped_mix3species_diffprop.fastq -S path/to/out_mix3species_diffprop.sam
 ```
