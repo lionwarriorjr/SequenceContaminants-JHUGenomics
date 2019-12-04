@@ -1,8 +1,5 @@
 #!/bin/bash
-read -p "Enter fastq path: " fastq_path
-read -p "Output path: " output_path
-cd facs/facs
-for filename in ../../facs_bf/*.bloom; do
+for filename in build/facs_build/facs_bf/*.bloom; do
   echo "$filename"
-  (./facs remove -r "$filename" -q "$fastq_path") 2> "../../contaminated_fastq/$(basename "$filename" .fna).fastq"
+  (./facs remove -r "$filename" -q "unmapped_mix3species.fastq") 2> "build/facs_build/contaminated_fastq/$(basename "$filename" .fna).fastq"
 done

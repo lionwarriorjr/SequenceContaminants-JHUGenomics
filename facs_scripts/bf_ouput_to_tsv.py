@@ -22,7 +22,7 @@ def parse_fastq(fh):
     return reads, names
 
 
-con_path = './contaminated_fastq'
+con_path = './build/facs_build/contaminated_fastq'
 output = {}
 SPECIES = {'e_coli.bloom.fastq': 0,
            's_maltophilia.bloom.fastq': 1,
