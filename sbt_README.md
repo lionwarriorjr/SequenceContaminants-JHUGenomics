@@ -21,33 +21,37 @@ export PKG_CONFIG_PATH=/path/to/final/resource/jellyfish-2.3.0:/path/to/final/re
 
 ### 3. Build Sequence Bloom Tree based on 11 species
 ```
+chmod +x ./code/sbt/sbt_build.sh
 ./code/sbt/sbt_build.sh
 ```
-We can build the SBT for potential contamination sources, which is 11 species in our case. The following are the key steps in building a bloomtree:
+We can build the SBT for potential contamination sources, which is 11 species in our case. The followings are the key steps in building a bloomtree:
 
 * 1) Specify relative paths
 ```
 SBT_DIR='./resource/bloomtree/src/'
-DATA_DIR='./data/raw'
-SIM_DIR='./data/simulation'
-BUILD_DIR='./build/sbt'
-CODE_DIR='./code/sbt'
-OUTPUT_DIR='./result/sbt'
+DATA_DIR='../../../data/raw'
+SIM_DIR='../../../data/sim'
+BUILD_DIR='../../../build/sbt'
+CODE_DIR='../../../code/sbt'
+OUTPUT_DIR='../../../result/sbt'
+
+cd $SBT_DIR # to run./bt
+
 ```
 
 * 2) Initialize hash functions 
 ```
-./resource/bloomtree/src/bt hashes --k 20 $BUILD_DIR/myhash.hh 1
+./bt hashes --k 20 $BUILD_DIR/myhash.hh 1
 ```
 In our analysis, we compared different `--k` parameter. It specifies k-mer length. By comparing different kmer lengths, ranging from 20 to 40, we found that the best performance is using default 20-mer. User can adjust the parameter value by replacing `--k 20` by `--k Number`  (i.e. set Number = 40).
 
 * 3) Build Bloom Filter for each species using a for loop
 ```
 for f in  $DATA_DIR/*.fna ; do
-         ./resource/bloomtree/src/bt count --k 20 --cutoff 1 $BUILD_DIR/myhash.hh 2000000000  $f  $BUILD_DIR/`basename $f .fna`.bf.bv
+         ./bt count --k 20 --cutoff 1 $BUILD_DIR/myhash.hh 2000000000  $f  $BUILD_DIR/`basename $f .fna`.bf.bv
 done
 ```
-In our analysis, we compared different `--cutoff` parameter. It specifies the minimum count required for a kmer to be added to the bloom filter. In our comparison, we found that the best choice is to include any element with one count or greater. 
+In our analysis, we compared different `--cutoff` parameter. It specifies the minimum count required for a kmer to be added to the bloom filter. In our comparison, we found that the best choice is to include all unique k-mers with one count or greater. 
 
 * 4) Create a list for all species
 ```
@@ -56,30 +60,31 @@ find $BUILD_DIR/*.bf.bv -maxdepth 1 -type f > $BUILD_DIR/list.txt
 
 * 5) Build a Sequence Bloom Tree
 ```
-./resource/bloomtree/src/bt build --k 20 $BUILD_DIR/myhash.hh $BUILD_DIR/list.txt $BUILD_DIR/allref.bloomtree
+./bt build --k 20 $BUILD_DIR/myhash.hh $BUILD_DIR/list.txt $BUILD_DIR/allref.bloomtree
 ```
 
 * 6) Draw the graph of bloom tree structure
 ```
-./resource/bloomtree/src/bt draw $BUILD_DIR/allref.bloomtree $BUILD_DIR/allrefstructure.dot
+./bt draw $BUILD_DIR/allref.bloomtree $BUILD_DIR/allrefstructure.dot
 ```
 User can use the online tools or install graphic package to draw the .dot relationship of all nodes and edges.
 
 ### 4. Query the unmapped reads obtained from Bowtie2 using SBT and summarize the results
 ```
+chmod +x ./code/sbt/sbt_run.sh
 ./code/sbt/sbt_run.sh
 ```
-After building the bloomtree, we could run the shell script `./sbt_run.sh` to query the unmapped reads to find the potential contaminating source(s). The following steps are included in our pipeline as well.
+After building the bloomtree, we could run the shell script `./sbt_run.sh` to query the unmapped reads to find the potential contaminating source(s). 
 
 * 1) Specify relative paths
 ```
-SBT_DIR='./resource/bloomtree/src/'
-DATA_DIR='./data/raw'
-SIM_DIR='./data/simulation'
-BUILD_DIR='./build/sbt'
-CODE_DIR='./code/sbt'
-OUTPUT_DIR='./result/sbt'
-UNMAPPED_FILE='unmapped_mix3species'
+SBT_DIR='./resource/bloomtree/src/' 
+DATA_DIR='../../../data/raw'
+SIM_DIR='../../../data/simulation'
+BUILD_DIR='../../../build/sbt'
+CODE_DIR='../../../code/sbt'
+OUTPUT_DIR='../../../result/sbt'
+UNMAPPED_FILE='new_unmapped_mix3species'
 ```
 The `UNMAPPED_FILE` specifies the file name for query set of sequences.
 
@@ -93,7 +98,7 @@ python3 $CODE_DIR/fastatoseq.py $SIM_DIR/$UNMAPPED_FILE.fasta > $SIM_DIR/$UNMAPP
 
 * 3) Query the unmapped reads
 ```
-./resource/bloomtree/src/bt query -t 0.8 --k 20 $BUILD_DIR/allref.bloomtree $SIM_DIR/$UNMAPPED_FILE.txt $OUTPUT_DIR/output.txt
+./bt query -t 0.8 --k 20 $BUILD_DIR/allref.bloomtree $SIM_DIR/$UNMAPPED_FILE.txt $OUTPUT_DIR/output.txt
 ```
 In our analysis, we compared different choice of threshold (`--t`). It defines a hit as the proportion of query kmers must be present in any bloom filter, which sets a tolerance for "approximate matching". We used the default `--t 0.8` as it produced reasonable result in our simulation setting.
 
@@ -102,6 +107,7 @@ In our analysis, we compared different choice of threshold (`--t`). It defines a
 python3 $CODE_DIR/SBTsummarize.py $SIM_DIR/$UNMAPPED_FILE.fasta $OUTPUT_DIR/output.txt > $OUTPUT_DIR/summary.txt
 ```
 The `SBTsummarize.py` script takes two inputs: first as query file in .fasta format and second as the query output files obtainted by applying SBT. It returns a summary file that contains 3 columns: sequence name, sequence read and 'matched' contaminated species.
+
 
 
 
